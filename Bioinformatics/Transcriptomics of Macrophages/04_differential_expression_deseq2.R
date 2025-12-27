@@ -27,10 +27,6 @@ library(readr)
 library(ashr)
 
 
-# ---- Working directory ----
-setwd("C:/your/working/directory")
-getwd()
-
 
 # ============================================================
 # Run DESeq2
