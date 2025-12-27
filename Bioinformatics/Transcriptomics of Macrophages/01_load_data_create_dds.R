@@ -38,7 +38,7 @@ data <- read_tsv("GSE162698_raw_counts_GRCh38.p13_NCBI.tsv") %>%
 
 
 # ---- Load sample metadata ----
-metadata <- read.csv("Metadata.csv") %>%
+metadata <- read.csv("GSE162698_metadata.csv") %>%
   column_to_rownames("Sample")
 
 
