@@ -17,7 +17,7 @@
 # ============================================================
 
 
-# ---- Libraries (needed for this script) ----
+# ---- Libraries ----
 library(DESeq2)
 library(ggplot2)
 library(dplyr)
