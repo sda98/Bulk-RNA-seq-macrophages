@@ -12,6 +12,9 @@
 #   - dds (DESeqDataSet)
 #
 # Output files:
+#   - Dispersion_plot.png
+#   - MA_plot_unshrunk.png
+#   - MA_plot_shrunk.png
 #   - DESeq2_results_annotated.csv
 # ============================================================
 
@@ -45,7 +48,9 @@ dds_results <- DESeq(dds)
 
 #Disperison model
 
+png("Dispersion_plot.png", width = 8, height = 7, units = "in", res = 600)
 plotDispEsts(dds_results)
+dev.off()
 
 
 # ============================================================
@@ -58,10 +63,15 @@ DESeq_results <- results(dds_results, contrast = c("Polarization", "M1", "M0"), 
 
 #MA plot and Log Shrinkage
 
+png("MA_plot_unshrunk.png", width = 8, height = 7, units = "in", res = 600)
 plotMA(DESeq_results, ylim = c(-15,15))
-DESeq_results <- lfcShrink(dds_results, contrast = c("Polarization", "M1", "M0"), res=DESeq_results, type = 'ashr')
-plotMA(DESeq_results, ylim = c(-15,15))
+dev.off()
 
+DESeq_results <- lfcShrink(dds_results, contrast = c("Polarization", "M1", "M0"), res=DESeq_results, type = 'ashr')
+
+png("MA_plot_shrunk.png", width = 8, height = 7, units = "in", res = 600)
+plotMA(DESeq_results, ylim = c(-15,15))
+dev.off()
 
 # ============================================================
 # Annotate DESeq2 results (org.Hs.eg.db)
