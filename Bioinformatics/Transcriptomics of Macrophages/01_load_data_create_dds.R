@@ -19,7 +19,7 @@
 # Metadata source:
 
 
-# ---- Libraries (needed for this script) ----
+# ---- Libraries ----
 library(DESeq2)
 library(dplyr)
 library(readr)
