@@ -1,40 +1,52 @@
 # ============================================================
 # 01_load_data_create_dds.R
-# Purpose: Load count matrix + metadata and create DESeq2 dds
+# Purpose:
+#   - Load GEO raw counts matrix
+#   - Load sample metadata
+#   - Validate sample order
+#   - Create DESeq2 dataset object (dds)
+#
+# Outputs (created in environment):
+#   - data     (count matrix)
+#   - metadata (sample metadata)
+#   - dds      (DESeqDataSet)
 # ============================================================
 
-# Data source: https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE162698 (Series RNA-seq raw counts matrix: GSE162698_raw_counts_GRCh38.p13_NCBI.tsv.gz)
-# Metadata source: 
 
-# Uploading packages
+# ---- Sources ----
+# Data source: https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE162698
+#   - Series RNA-seq raw counts matrix: GSE162698_raw_counts_GRCh38.p13_NCBI.tsv.gz
+# Metadata source:
 
+
+# ---- Libraries (needed for this script) ----
 library(DESeq2)
 library(dplyr)
 library(readr)
 library(tibble)
 
-# Setting directions
 
+# ---- Working directory ----
 setwd("C:/your/working/directory")
 getwd()
 
-# Loading data
 
+# ---- Load counts matrix ----
 data <- read_tsv("GSE162698_raw_counts_GRCh38.p13_NCBI.tsv") %>%
   mutate(GeneID = as.character(GeneID)) %>%
   column_to_rownames("GeneID")
 
-# Loading metadata
 
+# ---- Load sample metadata ----
 metadata <- read.csv("Metadata.csv") %>%
   column_to_rownames("Sample")
 
-# Matching data and metadata
 
+# ---- Validate alignment between metadata and count matrix ----
 stopifnot(all(rownames(metadata) == colnames(data)))
 
-# Creating DESeq2 object
 
+# ---- Create DESeq2 object ----
 metadata$Donor <- factor(metadata$Donor)
 metadata$Polarization <- factor(metadata$Polarization)
 
@@ -43,4 +55,3 @@ dds <- DESeqDataSetFromMatrix(
   colData = metadata,
   design = ~ Polarization 
 )
-
