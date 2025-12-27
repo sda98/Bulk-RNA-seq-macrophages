@@ -33,11 +33,6 @@ library(grid)
 library(readr)
 
 
-# ---- Working directory ----
-setwd("C:/your/working/directory")
-getwd()
-
-
 # ============================================================
 # Run g:Profiler pathway enrichment (KEGG / Reactome / WP)
 # ============================================================
