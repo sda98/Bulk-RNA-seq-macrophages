@@ -7,9 +7,9 @@
 #   - Extract genes for a selected pathway and export DE stats
 #
 # Inputs (expected to already exist in environment):
-#   - sig_genes (character vector of significant gene symbols)
-#   - bg_genes  (character vector of background gene symbols)
-#   - deseq_tbl (data.frame with SYMBOL_clean, log2FoldChange, padj, etc.)
+#   - sig_genes (character vector of significant gene symbols, created in 06_go_enrichment_gprofiler.R)
+#   - bg_genes  (character vector of background gene symbols, created in 06_go_enrichment_gprofiler.R)
+#   - deseq_tbl (Annotated DESeq2 output table created in 04_differential_expression_deseq2.R)
 #
 # Output files:
 #   - gprofiler_pathways.csv
