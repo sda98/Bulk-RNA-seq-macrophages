@@ -81,6 +81,7 @@ norm_counts_tbl <- as.data.frame(study_normalized_counts) %>%
 
 
 # ---- Sanity check + export ----
+
 nrow(study_normalized_counts) == nrow(norm_counts_tbl)
 
 readr::write_csv(norm_counts_tbl, "normalized_counts_annotated.csv")
