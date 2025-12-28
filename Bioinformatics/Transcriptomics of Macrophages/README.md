@@ -7,8 +7,7 @@ This repository contains an end-to-end **RNA-seq differential expression** workf
 ## Data sources
 
 - **Raw counts (GEO Series raw counts matrix):** `GSE162698_raw_counts_GRCh38.p13_NCBI.tsv.gz` 
-  Download page: https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE162698
-  # (Also preloaded here in data/GSE162698_raw_counts_GRCh38.p13_NCBI.tsv.gz)
+  Download page: https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE162698 (Also preloaded here in data/GSE162698_raw_counts_GRCh38.p13_NCBI.tsv.gz)
 
 - **Sample metadata (curated):** `GSE162698_metadata.csv`
   This metadata table was **manually curated by the author** by reviewing GEO sample annotations (GSE/GSM pages) and standardizing them into an analysis-ready format.
