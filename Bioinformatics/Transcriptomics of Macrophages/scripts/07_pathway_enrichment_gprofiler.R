@@ -37,12 +37,6 @@ library(readr)
 # Run g:Profiler pathway enrichment (KEGG / Reactome / WP)
 # ============================================================
 
-## Pathway analysis
-
-# ============================================================
-# Run g:Profiler (GO:BP/GO:MF/GO:CC)
-# ============================================================
-
 gp_pathway <- gost(
   query = sig_genes,
   organism = "hsapiens",
