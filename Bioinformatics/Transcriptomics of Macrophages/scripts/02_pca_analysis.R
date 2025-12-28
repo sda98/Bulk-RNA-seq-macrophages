@@ -258,7 +258,7 @@ readr::write_csv(load_wide, "PC_loadings.csv")
 ## TOP PC loadings bar plot
 
 pcs_loadings <- intersect(c("PC1","PC2","PC3","PC4"), names(load_wide))
-stopifnot(length(pcs) > 0)
+stopifnot(length(pcs_loadings) > 0)
 
 plot_df <- load_wide %>%
   dplyr::select(SYMBOL_clean, all_of(pcs_loadings)) %>%
