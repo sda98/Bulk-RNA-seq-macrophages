@@ -15,7 +15,7 @@
 # ---- Sources ----
 # Data source: https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE162698
 #   - Series RNA-seq raw counts matrix: GSE162698_raw_counts_GRCh38.p13_NCBI.tsv.gz
-# Metadata source: Built by the author (Sergey Dadoyan), see the README file
+# Metadata source: Built by the author (Sergey Dadoyan), see the README file for details
 
 
 # ---- Libraries ----
