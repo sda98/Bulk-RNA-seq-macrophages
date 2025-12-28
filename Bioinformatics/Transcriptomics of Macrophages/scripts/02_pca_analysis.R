@@ -2,7 +2,7 @@
 # 02_pca_analysis.R
 # Purpose:
 #   - VST transform
-#   - PCA (PC1 vs PC2, PC3 vs PC4) with custom legend panel
+#   - Create PCA plots (PC1 vs PC2, PC3 vs PC4) with custom legend panel
 #   - Extract and annotate PC loadings + plot top loadings for 4 principal components
 #
 # Inputs (expected to already exist in environment):
@@ -32,14 +32,15 @@ library(ragg)
 library(grid)
 
 # ---- VST transform ----
-# Variance Stabilization of counts
+
+## Variance Stabilization of counts
 
 vsd <- vst(dds, blind = TRUE)
 
 
 # ---- Principal Component Analysis ----
 
-# Preparing data
+## Preparing data
 
 ntop <- 500
 rv <- matrixStats::rowVars(assay(vsd))
@@ -60,7 +61,7 @@ pca_data <- cbind(pca_data, metadata[rownames(pca$x), , drop = FALSE])
 pc_variance <- (pca$sdev^2) / sum(pca$sdev^2) * 100
 
 
-# ---- Plot settings (colors / shapes) ----
+## Plot settings (colors / shapes) 
 
 pol_cols <- c("M0"="red",
               "M1"="blue",
