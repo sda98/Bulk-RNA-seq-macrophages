@@ -3,19 +3,20 @@
 # Purpose:
 #   - Perform GO enrichment (BP/MF/CC) using g:Profiler (gprofiler2)
 #   - Use significant DE genes as query + all tested genes as background
-#   - Export enrichment table
-#   - Generate publication-style GO dot plot + top-10 table panel
+#   - Export GO enrichment table
+#   - Generate labelled GO dot plot + top-10 GO terms table panel
 #
 # Inputs (expected to already exist in environment):
-#   - deseq_tbl (data.frame with padj, log2FoldChange, SYMBOL_clean, etc.)
+#   - deseq_tbl (Annotated DESeq2 output table created in 04_differential_expression_deseq2.R)
 #
 # Output files:
-#   - gprofiler_GO.csv
-#   - GO_enrichment_with_table.png
+#   - gprofiler_GO.csv (GO enrichment table, g:SCS-based Padj < 0.001)
+#   - GO_enrichment_with_table.png (GO dot plot with top-10 GO terms table panel)
 # ============================================================
 
 
 # ---- Libraries ----
+
 library(dplyr)
 library(tidyr)
 library(stringr)
@@ -71,7 +72,7 @@ gp_GO <- gost(
   query = sig_genes,
   organism = "hsapiens",
   correction_method = "g_SCS",
-  user_threshold = 0.001,
+  user_threshold = 0.001,               # Can customize the Padj cutoff for GO terms if needed
   sources = c("GO:BP","GO:MF","GO:CC"),
   custom_bg = bg_genes,
   evcodes = TRUE,
@@ -260,8 +261,3 @@ tab_grob <- gridExtra::tableGrob(
 final_GO_fig <- p_pub /
   tab_grob +
   plot_layout(heights = c(2.7, 1.85))
-
-final_GO_fig
-
-ggsave("GO_enrichment_with_table.png", final_GO_fig,
-       width = 9.25, height = 10.5, units = "in", dpi = 600)
