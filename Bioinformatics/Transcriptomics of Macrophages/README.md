@@ -147,7 +147,7 @@ Typical outputs written by the scripts:
 ## How to run
 
 1. Download or clone this repository.
-2. Set your working directory to /Projects/Bioinformatics/Transcriptomics of Macrophages
+2. Set your working directory to /Projects-main/Bioinformatics/Transcriptomics of Macrophages
 3. Open R / RStudio.
 4. Run scripts in order:
 
