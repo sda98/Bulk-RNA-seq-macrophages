@@ -9,6 +9,7 @@
 #   - data     (count matrix)
 #   - metadata (metadata)
 #   - dds      (DESeqDataSet)
+#   - Results folder
 # ============================================================
 
 
@@ -25,13 +26,13 @@ library(readr)
 library(tibble)
 
 # ---- Load counts matrix ----
-data <- read_tsv("GSE162698_raw_counts_GRCh38.p13_NCBI.tsv") %>%
+data <- read_tsv("data/GSE162698_raw_counts_GRCh38.p13_NCBI.tsv") %>%
   mutate(GeneID = as.character(GeneID)) %>%
   column_to_rownames("GeneID")
 
 
 # ---- Load sample metadata ----
-metadata <- read.csv("GSE162698_metadata.csv") %>%
+metadata <- read.csv("data/GSE162698_metadata.csv") %>%
   column_to_rownames("Sample")
 
 
