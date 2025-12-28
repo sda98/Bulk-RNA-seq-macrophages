@@ -13,7 +13,7 @@
 #
 # Output files:
 #   - gprofiler_pathways.csv
-#   - Pathway_Enrichments_with_table.png
+#   - Pathways_enrichments_with_table.png
 #   - REAC_R-HSA-909733_genes_DESeq2.csv (pathway of choice)
 # ============================================================
 
@@ -48,7 +48,7 @@ gp_pathway <- gost(
 )
 
 head(gp_pathway$result)
-readr::write_csv(gp_pathway$result, "gprofiler_pathway.csv")
+readr::write_csv(gp_pathway$result, "gprofiler_pathways.csv")
 
 
 # ============================================================
@@ -234,7 +234,7 @@ final_path_fig <- p_pub_pathway /
 
 final_path_fig
 
-ggsave("Pathway_enrichment_with_table.png", final_path_fig,
+ggsave("Pathways_enrichments_with_table.png", final_path_fig,
        width = 9.25, height = 10.5, units = "in", dpi = 600)
 
 
