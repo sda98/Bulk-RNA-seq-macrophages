@@ -14,9 +14,9 @@ This repository contains an end-to-end **RNA-seq differential expression** workf
 
 ---
 
-## Metadata description (`GSE162698_metadata.csv`) (also loaded in data/GSE162698_metadata.csv)
+## Metadata description (`GSE162698_metadata.csv`)
 
-This file contains per-sample annotations used to define the DESeq2 design and to generate figures.
+This file contains per-sample annotations used to define the DESeq2 design and to generate figures. The file is loaded here in data/GSE162698_metadata.csv
 
 **Columns**
 - `Sample`: GEO sample accession (e.g., `GSM...`). Must match the **column names of the counts matrix**.
