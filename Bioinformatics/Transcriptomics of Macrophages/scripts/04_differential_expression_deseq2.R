@@ -49,7 +49,7 @@ dds_results <- DESeq(dds)
 
 #Dispersion model
 
-png("Dispersion_plot.png", width = 8, height = 7, units = "in", res = 600)
+png("results/Dispersion_plot.png", width = 8, height = 7, units = "in", res = 600)
 plotDispEsts(dds_results)
 dev.off()
 
@@ -64,13 +64,13 @@ DESeq_results <- results(dds_results, contrast = c("Polarization", "M1", "M0"), 
 
 #MA plot and Log Shrinkage
 
-png("MA_plot_unshrunk.png", width = 8, height = 7, units = "in", res = 600)
+png("results/MA_plot_unshrunk.png", width = 8, height = 7, units = "in", res = 600)
 plotMA(DESeq_results, ylim = c(-15,15))
 dev.off()
 
 DESeq_results <- lfcShrink(dds_results, contrast = c("Polarization", "M1", "M0"), res=DESeq_results, type = 'ashr')
 
-png("MA_plot_shrunk.png", width = 8, height = 7, units = "in", res = 600)
+png("results/MA_plot_shrunk.png", width = 8, height = 7, units = "in", res = 600)
 plotMA(DESeq_results, ylim = c(-15,15))
 dev.off()
 
@@ -130,4 +130,4 @@ deseq_tbl <- res_tbl %>%
 
 nrow(deseq_tbl) == nrow(res_tbl)
 
-readr::write_csv(deseq_tbl, "DESeq2_results_annotated.csv")
+readr::write_csv(deseq_tbl, "results/DESeq2_results_annotated.csv")
