@@ -115,7 +115,7 @@ if (is.null(m$fill)) {
 m$colour <- NULL
 m$color  <- NULL
 
-## Removjng size mapping to later assign the constant size
+## Removing size mapping to later assign the constant size
 
 m$size <- NULL
 
