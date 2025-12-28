@@ -14,7 +14,7 @@
 # Output files:
 #   - gprofiler_pathways.csv
 #   - Pathway_Enrichments_with_table.png
-#   - REAC_R-HSA-909733_genes_DESeq2.csv
+#   - REAC_R-HSA-909733_genes_DESeq2.csv (pathway of choice)
 # ============================================================
 
 
@@ -39,83 +39,85 @@ library(readr)
 
 ## Pathway analysis
 
+# ============================================================
+# Run g:Profiler (GO:BP/GO:MF/GO:CC)
+# ============================================================
+
 gp_pathway <- gost(
   query = sig_genes,
   organism = "hsapiens",
   correction_method = "g_SCS",
-  user_threshold = 0.01,
+  user_threshold = 0.001,
   sources = c("KEGG", "REAC", "WP"),
   custom_bg = bg_genes,
   evcodes = TRUE,
 )
 
 head(gp_pathway$result)
-readr::write_csv(gp_pathway$result, "gprofiler_pathways.csv")
-
-gostplot(gp_pathway, capped = FALSE, interactive = TRUE)
+readr::write_csv(gp_pathway$result, "gprofiler_pathway.csv")
 
 
 # ============================================================
-# Static pathway plot (gostplot) + top terms table
+# g:Profiler plots (interactive + static)
 # ============================================================
 
-Path <- gostplot(gp_pathway, capped = FALSE, interactive = FALSE)
+gostplot(gp_pathway, capped = FALSE, interactive = TRUE) # Interactive plot
 
-top_table <- gp_pathway$result %>%
-  arrange(p_value) %>%
-  slice_head(n = 10) %>%
-  mutate(Rank = row_number()) %>%
-  dplyr::select(Rank, source, term_id, term_name, p_value) %>%
-  transmute(
-    Rank,
-    Source = source,
-    `Term ID` = term_id,
-    `Term name` = str_trunc(term_name, 70),
-    `P (adj)` = formatC(p_value, format = "e", digits = 2)
-  )
 
-top_terms <- top_table$`Term ID`
+Pathway <- gostplot(gp_pathway, capped = FALSE, interactive = FALSE)
 
 
 # ============================================================
-# Customize Path plot styling (outlined points + highlight top 10)
+# Customize GO plot styling (outlined points + highlight top 10)
 # ============================================================
 
-# first point layer index
-pt_idx <- which(vapply(GO$layers, function(l) inherits(l$geom, "GeomPoint"), logical(1)))[1]
+## Find the index of the first point layer (the GO term dots) in the ggplot object to edit the point layer
 
-# mapping for that layer
-m <- GO$layers[[pt_idx]]$mapping
+pt_idx <- which(vapply(Pathway$layers, function(l) inherits(l$geom, "GeomPoint"), logical(1)))[1]
 
-# keep original colors as fill (if color was mapped)
+## Accessing the mappings of this layer
+
+m <- Pathway$layers[[pt_idx]]$mapping
+
+## Keeping original colors as fills (if color was mapped by gProfiler)
+
 if (is.null(m$fill)) {
   if (!is.null(m$colour)) m$fill <- m$colour
   if (!is.null(m$color))  m$fill <- m$color
 }
 
-# remove colour mapping -> black outline
+## Removing colour mapping to edit them later
+
 m$colour <- NULL
 m$color  <- NULL
 
-# remove size mapping -> constant size
+## Removjng size mapping to later assign the constant size
+
 m$size <- NULL
 
-Path$layers[[pt_idx]]$mapping <- m
+## Reassigning the mapping to m object
 
-# outlined points with constant size
-Path$layers[[pt_idx]]$aes_params$shape  <- 21
-Path$layers[[pt_idx]]$aes_params$colour <- "black"
-Path$layers[[pt_idx]]$aes_params$stroke <- 0.5
-Path$layers[[pt_idx]]$aes_params$size   <- 5.5   # <- pick your constant point size
+Pathway$layers[[pt_idx]]$mapping <- m
 
-# palette for GO sources
+## Editing the point layer aesthetics
+
+Pathway$layers[[pt_idx]]$aes_params$shape  <- 21
+Pathway$layers[[pt_idx]]$aes_params$colour <- "black"
+Pathway$layers[[pt_idx]]$aes_params$stroke <- 0.5
+Pathway$layers[[pt_idx]]$aes_params$size   <- 5.5   
+
+## Palette for point aesthetics
+
 my_pal <- c("KEGG" = "#dd4477", "REAC" = "#3366cc", "WP" = "#0099c6")
-Path <- Path + scale_fill_manual(values = my_pal) + guides(size = "none")
-# Base alpha for everything
+Pathway <- Pathway + scale_fill_manual(values = my_pal) + guides(size = "none")
+
+## Base alpha for everything
+
 base_alpha <- 0.5
 
-# Add a rank column to GO$data for top 10
-Path$data <- Path$data %>%
+## Adding a rank column to GO$data for top 10, and add desired alpha values in the GO$data
+
+Pathway$data <- Pathway$data %>%
   left_join(
     gp_pathway$result %>%
       arrange(p_value) %>%
@@ -126,31 +128,33 @@ Path$data <- Path$data %>%
   ) %>%
   mutate(alpha_pt = ifelse(!is.na(Rank), 1, base_alpha))
 
-# Map alpha per point (and turn off alpha legend)
-Path <- Path +
-  aes(alpha = alpha_pt) +
-  scale_alpha_identity(guide = "none")
 
-# Add rank labels for the top 10
-label_df <- Path$data %>% filter(!is.na(Rank))
+## Removing the fixed alpha so mapping can work
 
-# remove the fixed alpha so mapping can work
-Path$layers[[pt_idx]]$aes_params$alpha <- NULL
+Pathway$layers[[pt_idx]]$aes_params$alpha <- NULL
 
-# map alpha to alpha_pt on the point layer
-Path$layers[[pt_idx]]$mapping$alpha <- rlang::sym("alpha_pt")
+## Mapping alpha to alpha_pt column on the point layer
 
-# use the alpha values as-is (no legend)
-Path <- Path + scale_alpha_identity(guide = "none")
+Pathway$layers[[pt_idx]]$mapping$alpha <- rlang::sym("alpha_pt")
 
-label_df <- Path$data %>% dplyr::filter(!is.na(Rank))
+## Using the alpha values as-is without scaling and without legend
 
+Pathway <- Pathway + scale_alpha_identity(guide = "none")
+
+label_df <- Pathway$data %>% dplyr::filter(!is.na(Rank))
+
+## Removing colour aesthetics from GO
+
+Pathway$scales$scales <- Filter(
+  function(s) !any(s$aesthetics %in% c("colour", "color")),
+  Pathway$scales$scales
+)
 
 # ============================================================
-# Publication-style Pathway plot (rank labels + theme)
+# Publication-style GO plot (rank labels + theme)
 # ============================================================
 
-p_pub <- Path +
+p_pub_pathway <- Pathway +
   ggrepel::geom_label_repel(
     data = label_df,
     aes(x = order, y = logpval, label = Rank),
@@ -158,10 +162,10 @@ p_pub <- Path +
     size = 7.5,
     fontface = "bold",
     color = "black",
-    fill = "grey95",               # background fill
-    label.size = 0.6,              # border thickness
-    label.r = unit(5, "pt"),       # corner roundness
-    box.padding = 0.9,
+    fill = "grey95",               
+    label.size = 0.6,             
+    label.r = unit(5, "pt"),       
+    box.padding = 1.1,
     point.padding = 0.82,
     segment.color = "black",
     segment.size = 0.8,
@@ -169,9 +173,9 @@ p_pub <- Path +
     max.overlaps = Inf,
     seed = 3
   ) +
-  labs(title = "Enriched pathways", y = expression(-log[10](p[adj]))) +
+  labs(title = "Pathway enrichment", y = expression(-log[10](p[adj]))) +
   scale_y_continuous(expand = expansion(mult = c(0, 0.08))) +
-  theme_classic(base_size = 12) +
+  theme_classic() +
   theme(
     plot.title = element_text(face = "bold", size = 33, color = "black", hjust = 0, margin = margin(b = 6)),
     axis.title.y = element_text(face = "bold", size = 22, color = "black", margin = margin(r = 6)),
@@ -189,16 +193,14 @@ p_pub <- Path +
     plot.margin = margin(6, 8, 6, 6)
   )
 
-p_pub
+p_pub_pathway
 
 
 # ============================================================
-# Table panel (top 10 terms) + alignment to plot
+# Table panel (top 10 terms) + Table as a plot
 # ============================================================
 
-# slimmer table (this is what makes patchwork alignment actually visible)
-
-table_df <- gp_pathway$result %>%
+table_df_path <- gp_pathway$result %>%
   arrange(p_value) %>%
   slice_head(n = 10) %>%
   mutate(Rank = row_number()) %>%
@@ -211,8 +213,8 @@ table_df <- gp_pathway$result %>%
   )
 
 
-tab_grob <- gridExtra::tableGrob(
-  table_df,
+tab_grob_path <- gridExtra::tableGrob(
+  table_df_path,
   rows = NULL,
   theme = gridExtra::ttheme_minimal(
     base_size = 15,
@@ -228,56 +230,38 @@ tab_grob <- gridExtra::tableGrob(
   )
 )
 
-
-g <- ggplotGrob(p_pub)
-
-# find panel(s) robustly (works for "panel-1-1", facets, etc.)
-panel_rows <- which(grepl("^panel", g$layout$name))
-if (length(panel_rows) == 0) stop("Could not find a panel grob in p_pub")
-
-# for facetted plots, take the leftmost panel column
-left_panel_col <- min(g$layout$l[panel_rows])
-
-# exact left gutter width up to the left edge of the panel
-left_offset <- if (left_panel_col > 1) sum(g$widths[seq_len(left_panel_col - 1)]) else unit(0, "pt")
-
-tab_grob_aligned <- gtable::gtable_add_cols(tab_grob, left_offset, pos = 0)
-
-tab_pw <- patchwork::wrap_elements(full = tab_grob_aligned) +
-  theme(plot.margin = margin(0, 7, 0, 0))
-# ----------------------------------------------------------------------
-
-
 # ============================================================
-# Assemble final figure (plot + table) + export
+# Assembling final figure (plot + table) 
 # ============================================================
 
-final_Path_fig <- p_pub /
-  tab_pw +
+final_path_fig <- p_pub_pathway /
+  tab_grob_path +
   plot_layout(heights = c(2.7, 1.85))
 
-final_Path_fig
+final_path_fig
 
-ggsave("Pathway_Enrichments_with_table.png", final_Path_fig,
-       width = 10, height = 10.5, units = "in", dpi = 600)
+ggsave("Pathway_enrichment_with_table.png", final_path_fig,
+       width = 9.25, height = 10.5, units = "in", dpi = 600)
 
 
 # ============================================================
 # Selected pathway: extract member genes + export DE stats
 # ============================================================
 
-# Selected pathway genes
+## Sanity check: see what the overlap column is called
 
-# sanity check: see what the overlap column is called
 names(gp_pathway$result)
 
-# pick the overlap column name robustly
+## Picking the overlap column names to get gene names
+
 overlap_col <- intersect(c("intersection", "intersections"), names(gp_pathway$result))[1]
 stopifnot(!is.na(overlap_col))
 
+## Getting the gene names from the term of interest
+
 genes_pathway <- gp_pathway$result %>%
-  filter(term_id == "REAC:R-HSA-909733") %>%
-  slice(1) %>%                              # just in case duplicates
+  filter(term_id == "REAC:R-HSA-909733") %>% # Can repace with another term of intest
+  slice(1) %>%                              
   pull(!!sym(overlap_col)) %>%
   str_split(",") %>%
   .[[1]] %>%
@@ -289,7 +273,11 @@ length(genes_pathway)
 head(genes_pathway, 30)
 
 
-deseq_long <- deseq_tbl %>%
+## Extracting DESeq2 Log2FC and Padj information for the selected genes 
+
+### Getting clean Log2FC/Padj table
+
+deseq_clean <- deseq_tbl %>%
   transmute(
     symbol = SYMBOL_clean,
     log2FoldChange,
@@ -300,10 +288,14 @@ deseq_long <- deseq_tbl %>%
   filter(!is.na(symbol), symbol != "") %>%
   distinct(symbol, .keep_all = TRUE)
 
-pathway_gene_stats <- deseq_long %>%
+### Filtering Log2FC/Padj table by the genes of interest
+
+pathway_gene_stats <- deseq_clean %>%
   filter(symbol %in% genes_pathway) %>%
   arrange(padj)
 
 pathway_gene_stats
 
-readr::write_csv(pathway_gene_stats, "REAC_R-HSA-909733_genes_DESeq2.csv")
+## Saving the final result
+
+readr::write_csv(pathway_gene_stats, "REAC_R-HSA-909733_genes_DESeq2.csv") # Can rename CV file if needed
