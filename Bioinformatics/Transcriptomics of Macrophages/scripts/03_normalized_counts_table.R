@@ -10,7 +10,7 @@
 #   - dds (Created in 01_load_data_create_dds.R)
 #
 # Output files:
-#   - normalized_counts_annotated.csv
+#   - normalized_counts_annotated.csv (Anntated table of normailized counts)
 # ============================================================
 
 
