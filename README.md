@@ -28,17 +28,25 @@ This file contains per-sample annotations used to define the DESeq2 design and t
 
 ## Repository structure
 
-- `data/`
-  - `GSE162698_raw_counts_GRCh38.p13_NCBI.tsv`
-  - `GSE162698_metadata.csv`
-- `scripts/`
-  - `01_load_data_create_dds.R`
-  - `02_pca_analysis.R`
-  - `03_normalized_counts_table.R`
-  - `04_differential_expression_deseq2.R`
-  - `05_volcano_plot.R`
-  - `06_go_enrichment_gprofiler.R`
-  - `07_pathway_enrichment_gprofiler.R`
+```
+├── data/
+│   ├── GSE162698_raw_counts_GRCh38.p13_NCBI.tsv
+│   └── GSE162698_metadata.csv
+├── figures/
+│   ├── PC1_vs_PC2.png
+│   ├── PC_loadings.png
+│   ├── volcano_plot.png
+│   ├── GO_enrichment_with_table.png
+│   └── Pathways_enrichments_with_table.png
+└── scripts/
+    ├── 01_load_data_create_dds.R
+    ├── 02_pca_analysis.R
+    ├── 03_normalized_counts_table.R
+    ├── 04_differential_expression_deseq2.R
+    ├── 05_volcano_plot.R
+    ├── 06_go_enrichment_gprofiler.R
+    └── 07_pathway_enrichment_gprofiler.R
+```
 
 ---
 
@@ -64,6 +72,12 @@ This file contains per-sample annotations used to define the DESeq2 design and t
 - Extracts and annotates PC loadings:
   - `PC_loadings.csv`
   - `PC_loadings.png` (top absolute loadings per PC)
+
+![PCA — PC1 vs PC2](figures/PC1_vs_PC2.png)
+*PC1 separates M1-polarized macrophages from resting (M0) and alternatively activated (M2) states.*
+
+![PC loadings — top genes driving each principal component](figures/PC_loadings.png)
+*Top genes by absolute loading on each PC, showing which genes drive the separation between polarization states.*
 
 ### 3) Normalized counts table
 **Script:** `scripts/03_normalized_counts_table.R`
@@ -92,6 +106,9 @@ This file contains per-sample annotations used to define the DESeq2 design and t
 - Labels top 10 upregulated + top 10 downregulated genes
 - Exports: `volcano_plot.png`
 
+![Volcano plot — M1 vs M0](figures/volcano_plot.png)
+*Differentially expressed genes in M1 vs M0 (padj ≤ 0.01, |log2FC| ≥ 1). Top 10 up- and downregulated genes are labeled.*
+
 ### 6) GO enrichment (g:Profiler)
 **Script:** `scripts/06_go_enrichment_gprofiler.R`
 
@@ -102,16 +119,22 @@ This file contains per-sample annotations used to define the DESeq2 design and t
 - Exports figure (dot plot + top-10 GO terms table): `GO_enrichment_with_table.png`
 - Also produces an interactive `gostplot()` when run in-session
 
+![GO enrichment — top terms](figures/GO_enrichment_with_table.png)
+*Top GO terms (BP, MF, CC) enriched among M1-upregulated and downregulated genes.*
+
 ### 7) Pathway enrichment (g:Profiler)
 **Script:** `scripts/07_pathway_enrichment_gprofiler.R`
 
 - Pathway enrichment for:
   - `KEGG`, `REAC` (Reactome), `WP` (WikiPathways)
 - Uses significant DE genes (Padj < 0.01, |Log2FC| > 1) as query and all tested genes as background
--  Exports pathways enrichment table: `gprofiler_pathways.csv`
+- Exports pathways enrichment table: `gprofiler_pathways.csv`
 - Exports figure (dot plot + top-10 pathways table): `Pathways_enrichments_with_table.png`
 - Extracts genes for a selected pathway (`REAC:R-HSA-909733`) and exports DE stats:
   - `REAC_R-HSA-909733_genes_DESeq2.csv`
+
+![Pathway enrichment — KEGG, Reactome, WikiPathways](figures/Pathways_enrichments_with_table.png)
+*Top enriched pathways across KEGG, Reactome, and WikiPathways for M1 vs M0 DE genes.*
 
 ---
 
@@ -159,4 +182,4 @@ source("scripts/04_differential_expression_deseq2.R")
 source("scripts/05_volcano_plot.R")
 source("scripts/06_go_enrichment_gprofiler.R")
 source("scripts/07_pathway_enrichment_gprofiler.R")
-                                      
+```
